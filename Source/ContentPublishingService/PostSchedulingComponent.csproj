@@ -52,10 +52,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DelayBetweenPosts.cs" />
     <Compile Include="PostSchedulingComponent.cs" />
     <Compile Include="ContentPostData.cs" />
-    <Compile Include="PostContentToPage.cs" />
+    <Compile Include="ProcessPosts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UndoTimeout.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -50,6 +50,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PostContentToFacebookPage.cs" />
+    <Compile Include="ProcessScheduledPosts.cs" />
     <Compile Include="ScheduleContentPosts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UndoSchedulingOfContent.cs" />
