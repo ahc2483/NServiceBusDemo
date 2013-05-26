@@ -24,8 +24,8 @@
             this.Data.PagePosts = message.PagePosts;
             this.Data.UndoStillAllowed = true;
 
-            //Wait 5 minutes to allow for undo
-            this.RequestUtcTimeout<UndoTimeout>(TimeSpan.FromMinutes(5));
+            //Wait 10 seconds to allow for undo
+            this.RequestUtcTimeout<UndoTimeout>(TimeSpan.FromSeconds(10));
         }
 
         public void Handle(UndoSchedulingOfContent message)
