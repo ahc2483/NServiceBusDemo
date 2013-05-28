@@ -6,9 +6,16 @@
 
     public class PostContentToFacebookPageHandler : IHandleMessages<PostContentToFacebookPage>
     {
+        public IBus Bus { get; set; }
+
         public void Handle(PostContentToFacebookPage message)
         {
-            throw new NotImplementedException();
+            if (DateTime.Now < message.TimeToPost)
+            {
+                Bus.Defer(message.TimeToPost, message);
+            }
+
+            //TODO: Post content to FB
         }
     }
 }

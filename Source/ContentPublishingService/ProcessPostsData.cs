@@ -1,9 +1,10 @@
 ﻿namespace NServiceBusDemo.ContentPublishingService
 {
+    using System;
     using System.Collections.Generic;
     using NServiceBus.Saga;
 
-    public class ContentPostData : IContainSagaData
+    public class ProcessPostsData : IContainSagaData
     {
         #region IContainSagaData Members
 

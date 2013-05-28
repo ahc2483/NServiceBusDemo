@@ -7,11 +7,10 @@
     using NServiceBus.Saga;
     using NServiceBusDemo.Commands;
 
-    public class ProcessPosts : Saga<ContentPostData>,
+    public class ProcessPosts : Saga<ProcessPostsData>,
         IAmStartedByMessages<ScheduleContentPosts>,
         IHandleMessages<UndoSchedulingOfContent>,
-        IHandleTimeouts<UndoTimeout>,
-        IHandleTimeouts<DelayBetweenPosts>
+        IHandleTimeouts<UndoTimeout>
     {
         public override void ConfigureHowToFindSaga()
         {
@@ -37,37 +36,28 @@
         public void Timeout(UndoTimeout undoWindow)
         {
             this.Data.UndoStillAllowed = false;
-            this.ProcessNextPost();   
-        }
-
-        public void Timeout(DelayBetweenPosts delayState)
-        {
-            this.ProcessNextPost();
+            this.SchedulePosts();   
         }
 
         #region Private Members
 
-        private void ProcessNextPost()
+        private void SchedulePosts()
         {
-            KeyValuePair<string, string> contentToPost = this.Data.PagePosts.First();
+            int postCount = 0;
 
-            Bus.Send<PostContentToFacebookPage>(pagePost =>
+            foreach (KeyValuePair<string, string> pagePost in this.Data.PagePosts)
             {
-                pagePost.PageId = contentToPost.Key;
-                pagePost.PostContent = contentToPost.Value;
-            });
+                Bus.Send<PostContentToFacebookPage>(newPost =>
+                {
+                    newPost.PageId = pagePost.Key;
+                    newPost.PostContent = pagePost.Value;
+                    newPost.TimeToPost = DateTime.Now.AddSeconds(postCount * 30); // Should configure this interval using config
+                });
 
-            this.Data.PagePosts.Remove(contentToPost.Key);
-
-            if (this.Data.PagePosts.Count() > 0)
-            {
-                //Schedule the next post to occur in 30 seconds
-                this.RequestUtcTimeout<DelayBetweenPosts>(TimeSpan.FromSeconds(30));
+                postCount++;
             }
-            else
-            {
-                this.MarkAsComplete();
-            }    
+
+            this.MarkAsComplete();   
         }
 
         #endregion

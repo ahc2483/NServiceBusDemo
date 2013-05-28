@@ -11,5 +11,6 @@
     {
         public string PageId { get; set; }
         public string PostContent { get; set; }
+        public DateTime TimeToPost { get; set; }
     }
 }

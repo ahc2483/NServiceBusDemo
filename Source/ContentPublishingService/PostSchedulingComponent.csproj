@@ -52,7 +52,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DelayBetweenPosts.cs" />
     <Compile Include="PostSchedulingComponent.cs" />
     <Compile Include="ContentPostData.cs" />
     <Compile Include="ProcessPosts.cs" />
