@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{5ADAA844-823B-4043-95F6-1A77FDDD920D}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NServiceBusDemo.ContentPublishingService</RootNamespace>
     <AssemblyName>NServiceBusDemo.ContentPublishingService</AssemblyName>
@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net">
       <HintPath>..\..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
@@ -56,7 +59,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EndpointConfig.cs" />
-    <Compile Include="PostSchedulingComponent.cs" />
     <Compile Include="ProcessPostsData.cs" />
     <Compile Include="ProcessPosts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -70,6 +72,10 @@
     <ProjectReference Include="..\Commands\Commands.csproj">
       <Project>{5b154338-91db-4212-ba0f-9cde64b19189}</Project>
       <Name>Commands</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Messages\Messages.csproj">
+      <Project>{beff1fb7-25cf-42e5-9d8a-c5873a03ff64}</Project>
+      <Name>Messages</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -7,11 +7,11 @@
     using System.Threading.Tasks;
     using NServiceBus;
 
-    public class MessageHandler : IHandleMessages<IMessage>
+    public class MessageHandler : IHandleMessages<Messages.PostScheduleCompleted>
     {
-        public void Handle(IMessage message)
+        public void Handle(Messages.PostScheduleCompleted message)
         {
-            Console.WriteLine(message);
+            Console.WriteLine(string.Format("PostSchedule: {0} has completed!", message.PostScheduleId));
         }
     }
 }

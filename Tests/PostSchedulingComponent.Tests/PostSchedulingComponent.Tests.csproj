@@ -79,6 +79,10 @@
       <Project>{5adaa844-823b-4043-95f6-1a77fddd920d}</Project>
       <Name>PostSchedulingComponent</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Source\Messages\Messages.csproj">
+      <Project>{beff1fb7-25cf-42e5-9d8a-c5873a03ff64}</Project>
+      <Name>Messages</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

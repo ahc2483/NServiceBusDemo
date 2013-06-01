@@ -6,38 +6,99 @@
     using NServiceBus;
     using NServiceBus.Saga;
     using NServiceBusDemo.Commands;
+    using NServiceBusDemo.Messages;
+    using System.Collections.ObjectModel;
+    using System.Collections.Specialized;
 
     public class ProcessPosts : Saga<ProcessPostsData>,
         IAmStartedByMessages<ScheduleContentPosts>,
         IHandleMessages<UndoSchedulingOfContent>,
-        IHandleTimeouts<UndoTimeout>
+        IHandleTimeouts<UndoTimeout>,
+        IHandleMessages<ContentWasPostedToFacebookPage>,
+        IHandleMessages<ContentFailedToPostToFacebookPage>
     {
+        #region overrides
+        /// <summary>
+        /// For now... I might implement a sagafinder later if there's time
+        /// </summary>
         public override void ConfigureHowToFindSaga()
         {
             this.ConfigureMapping<UndoSchedulingOfContent>(sagaData => sagaData.PostScheduleId, udc => udc.PostScheduleId);
+            this.ConfigureMapping<ContentWasPostedToFacebookPage>(sagaData => sagaData.PostScheduleId, m => m.PostScheduleId);
+            this.ConfigureMapping<ContentFailedToPostToFacebookPage>(sagaData => sagaData.PostScheduleId, m => m.PostScheduleId);
         }
+        #endregion
 
+        #region handlers
+        /// <summary>
+        /// Handles the schedule posts command
+        /// </summary>
         public void Handle(ScheduleContentPosts message)
         {
+            if (null == message || null == message.PagePosts || message.PagePosts.Count() < 1)
+            {
+                this.MarkAsComplete();
+                return;
+            }
+
+            Console.WriteLine("ScheduleContentPosts message recieved, posting in 10 senconds...");
+
             this.Data.PostScheduleId = message.PostScheduleId;
             this.Data.PagePosts = message.PagePosts;
+
+            this.Data.RemainingPosts = new List<string>();
+
+
             this.Data.UndoStillAllowed = true;
 
             //Wait 10 seconds to allow for undo
             this.RequestUtcTimeout<UndoTimeout>(TimeSpan.FromSeconds(10));
         }
 
+        /// <summary>
+        /// Handles the undo command... cancels the postschedule
+        /// </summary>
         public void Handle(UndoSchedulingOfContent message)
         {
-            if(this.Data.UndoStillAllowed)
+            if (this.Data.UndoStillAllowed)
+            {
+                Console.WriteLine(string.Format("Post schedule {0} has been cancelled", message.PostScheduleId));
                 this.MarkAsComplete();
+            }
+            Console.WriteLine("Whatever embarrassing thing you've just posted... suck it up, cause it's too late to cancel it!");
         }
 
+        /// <summary>
+        /// The window to cancel postschedule has closed
+        /// </summary>
         public void Timeout(UndoTimeout undoWindow)
         {
+            Console.WriteLine(string.Format("Commencing post schedule: {0}", this.Data.PostScheduleId));
+
             this.Data.UndoStillAllowed = false;
-            this.SchedulePosts();   
+            this.SchedulePosts();
         }
+
+        /// <summary>
+        /// Handle the message that we've successfully posted some content
+        /// </summary>
+        /// <param name="message"></param>
+        public void Handle(ContentWasPostedToFacebookPage message)
+        {
+            this.Data.RemainingPosts.Remove(message.PostId);
+            CheckRemaining();
+        }
+
+        /// <summary>
+        /// Now we have fucked up.
+        /// </summary>
+        /// <param name="message"></param>
+        public void Handle(ContentFailedToPostToFacebookPage message)
+        {
+            this.Data.RemainingPosts.Remove(message.PostId);
+            CheckRemaining();
+        }
+        #endregion
 
         #region Private Members
 
@@ -47,19 +108,40 @@
 
             foreach (KeyValuePair<string, string> pagePost in this.Data.PagePosts)
             {
-                Bus.Send<PostContentToFacebookPage>(newPost =>
+                string postId = Guid.NewGuid().ToString();
+                this.Data.RemainingPosts.Add(postId);
+
+                var cmd = new PostContentToFacebookPage
                 {
-                    newPost.PageId = pagePost.Key;
-                    newPost.PostContent = pagePost.Value;
-                    newPost.TimeToPost = DateTime.Now.AddSeconds(postCount * 30); // Should configure this interval using config
-                });
+                    PostScheduleId = this.Data.PostScheduleId,
+                    PostId = postId,
+                    PageId = pagePost.Key,
+                    PostContent = pagePost.Value,
+                    TimeToPost = DateTime.Now.AddSeconds(postCount * 30) // Should configure this interval using config
+                };
+                // Because we're going to potentially defer this message, we need some way to identify
+                // where the message originally came from
+                cmd.SetHeader(CommandHeaders.Keys.Originator, EndpointConfig.EndpointName);
+                Bus.Send("facebook_endpoint", cmd);
 
                 postCount++;
             }
-
-            this.MarkAsComplete();   
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private void CheckRemaining()
+        {
+            if (this.Data.RemainingPosts.Count == 0)
+            {
+                Bus.Publish<PostScheduleCompleted>(m =>
+                {
+                    m.PostScheduleId = this.Data.PostScheduleId;
+                });
+                this.MarkAsComplete();  
+            }
+        }
         #endregion
     }
 }

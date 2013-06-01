@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnumsAndConstants.cs" />
     <Compile Include="PostContentToFacebookPage.cs" />
     <Compile Include="ProcessScheduledPosts.cs" />
     <Compile Include="ScheduleContentPosts.cs" />

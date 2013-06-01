@@ -28,19 +28,24 @@
             Test.Initialize();
 
             TimeSpan expectedWait = TimeSpan.FromSeconds(10);
-            Dictionary<string, string> testPosts = new Dictionary<string, string>();
-            testPosts.Add("123", "test");
-            testPosts.Add("456", "test");
+
+            var posts = new Dictionary<string, string>{
+                {"page1", "post me!"},
+                {"page2", "post me!"},
+                {"page3", "post me!"}
+            };
 
             Test.Saga<ProcessPosts>()
                 .ExpectTimeoutToBeSetIn<UndoTimeout>((timeoutMessage, at) => at == expectedWait)
-            .When(saga => saga.Handle(new ScheduleContentPosts(){
-                PagePosts = testPosts,
-                PostScheduleId = "123456"
-            }))
-                .ExpectSend<PostContentToFacebookPage>(m => String.Equals(m.PageId, "123"))
-                .ExpectSend<PostContentToFacebookPage>(m => DateTime.Now < m.TimeToPost && String.Equals(m.PageId, "456"))
-            .WhenSagaTimesOut()
+                .When(saga => saga.Handle(new ScheduleContentPosts(){
+                    PagePosts = posts,
+                    PostScheduleId = "123456"
+                }))
+                .ExpectSend<PostContentToFacebookPage>(m => String.Equals(m.PageId, "page1"))
+                .ExpectSend<PostContentToFacebookPage>(m => DateTime.Now < m.TimeToPost && string.Equals(m.PageId, "page2"))
+                .ExpectSend<PostContentToFacebookPage>(m=> DateTime.Now < m.TimeToPost && string.Equals(m.PageId, "page3"))
+                
+                .WhenSagaTimesOut()
                 .AssertSagaCompletionIs(true);
         }
     }
