@@ -64,6 +64,7 @@
             {
                 Console.WriteLine(string.Format("Post schedule {0} has been cancelled", message.PostScheduleId));
                 this.MarkAsComplete();
+                return;
             }
             Console.WriteLine("Whatever embarrassing thing you've just posted... suck it up, cause it's too late to cancel it!");
         }
