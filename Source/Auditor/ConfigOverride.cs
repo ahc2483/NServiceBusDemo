@@ -22,11 +22,13 @@ namespace NServiceBusDemo.Auditor
             mappings.Add(new MessageEndpointMapping { 
                 AssemblyName = "NServiceBusDemo.Messages",
                 Endpoint = "content_publishing_scheduler",
-                Messages = "NServiceBusDemo.Messages"
+                Messages = "NServiceBusDemo.Messages",
+                
             });
             return new UnicastBusConfig
             {
-                MessageEndpointMappings = mappings
+                MessageEndpointMappings = mappings,
+                ForwardReceivedMessagesTo = "system_auditor"
             };
         }
     }
