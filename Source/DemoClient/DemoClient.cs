@@ -1,15 +1,10 @@
-﻿using NServiceBus;
-using NServiceBus.Unicast;
-using NServiceBusDemo.Commands;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace DemoClient
+﻿namespace DemoClient
 {
+    using System;
+    using System.Collections.Generic;
+    using NServiceBus;
+    using NServiceBusDemo.Commands;
+
     public class DemoClient : IWantToRunAtStartup
     {
         #region properties/fields

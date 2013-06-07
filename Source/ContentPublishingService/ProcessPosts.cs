@@ -11,7 +11,6 @@
     public class ProcessPosts : Saga<ProcessPostsData>,
         IAmStartedByMessages<ScheduleContentPosts>,
         IHandleMessages<UndoSchedulingOfContent>,
-        IHandleTimeouts<UndoTimeout>,
         IHandleMessages<ContentWasPostedToFacebookPage>,
         IHandleMessages<ContentFailedToPostToFacebookPage>
     {
@@ -50,7 +49,7 @@
             this.Data.UndoStillAllowed = true;
 
             //Wait 10 seconds to allow for undo
-            this.RequestUtcTimeout<UndoTimeout>(TimeSpan.FromSeconds(10));
+            RequestUtcTimeout(TimeSpan.FromSeconds(10), "undo window closed");
         }
 
         /// <summary>
@@ -70,7 +69,8 @@
         /// <summary>
         /// The window to cancel postschedule has closed
         /// </summary>
-        public void Timeout(UndoTimeout undoWindow)
+        [Obsolete]
+        public override void Timeout(object state)
         {
             Console.WriteLine(string.Format("Commencing post schedule: {0}", this.Data.PostScheduleId));
 
@@ -89,7 +89,7 @@
         }
 
         /// <summary>
-        /// Now we have fucked up.
+        /// Schedule failed to complete.
         /// </summary>
         /// <param name="message"></param>
         public void Handle(ContentFailedToPostToFacebookPage message)
@@ -116,7 +116,7 @@
                     PostId = postId,
                     PageId = pagePost.Key,
                     PostContent = pagePost.Value,
-                    TimeToPost = DateTime.Now.AddSeconds(postCount * 30) // Should configure this interval using config
+                    TimeToPost = DateTime.Now.AddSeconds(postCount * 5) // Should configure this interval using config
                 };
                 // Because we're going to potentially defer this message, we need some way to identify
                 // where the message originally came from
@@ -128,12 +128,14 @@
         }
 
         /// <summary>
-        /// 
+        /// Checks if there are any remaining posts to respond.
         /// </summary>
         private void CheckRemaining()
         {
             if (this.Data.RemainingPosts.Count == 0)
             {
+                Console.WriteLine("Schedule has completed. Publishing to the world...");
+
                 Bus.Publish<PostScheduleCompleted>(m =>
                 {
                     m.PostScheduleId = this.Data.PostScheduleId;

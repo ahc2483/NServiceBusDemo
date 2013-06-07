@@ -15,6 +15,7 @@
 
         #endregion
 
+        [Unique]
         public string PostScheduleId { get; set; }
         public Dictionary<string, string> PagePosts { get; set; }
         public List<string> RemainingPosts { get; set; }
