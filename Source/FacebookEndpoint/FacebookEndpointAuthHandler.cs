@@ -1,12 +1,7 @@
-﻿using NServiceBus;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FacebookEndpoint
+﻿namespace FacebookEndpoint
 {
+    using NServiceBus;
+
     public class FacebookEndpointAuthHandler : IHandleMessages<IMessage>
     {
         #region properties/fields

@@ -7,8 +7,6 @@
     using NServiceBus.Saga;
     using NServiceBusDemo.Commands;
     using NServiceBusDemo.Messages;
-    using System.Collections.ObjectModel;
-    using System.Collections.Specialized;
 
     public class ProcessPosts : Saga<ProcessPostsData>,
         IAmStartedByMessages<ScheduleContentPosts>,

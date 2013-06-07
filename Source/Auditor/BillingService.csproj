@@ -61,7 +61,7 @@
   <ItemGroup>
     <Compile Include="ConfigOverride.cs" />
     <Compile Include="EndpointConfig.cs" />
-    <Compile Include="MessageHandler.cs" />
+    <Compile Include="PostScheduledCompletedEventHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
