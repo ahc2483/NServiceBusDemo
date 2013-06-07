@@ -1,13 +1,8 @@
-﻿using NServiceBus.Config;
-using NServiceBus.Config.ConfigurationSource;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NServiceBusDemo.Auditor
+﻿namespace NServiceBusDemo.Auditor
 {
+    using NServiceBus.Config;
+    using NServiceBus.Config.ConfigurationSource;
+
     /// <summary>
     /// Configuration
     /// </summary>

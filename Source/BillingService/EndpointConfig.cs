@@ -7,7 +7,7 @@
     using System.Threading.Tasks;
     using NServiceBus;
 
-    [EndpointName("system_auditor")]
+    [EndpointName("billing_service")]
     public class EndpointConfig : IConfigureThisEndpoint, AsA_Server
     {
     }
