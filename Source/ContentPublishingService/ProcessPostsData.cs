@@ -7,6 +7,12 @@
 
     public class ProcessPostsData : IContainSagaData
     {
+        public ProcessPostsData()
+        {
+            this.RemainingPosts = new List<string>();
+            this.CompletedPosts = new List<string>();
+        }
+
         #region IContainSagaData Members
 
         public System.Guid Id { get; set; }
@@ -19,6 +25,7 @@
         public string PostScheduleId { get; set; }
         public Dictionary<string, string> PagePosts { get; set; }
         public List<string> RemainingPosts { get; set; }
+        public List<string> CompletedPosts { get; set; }
         public bool UndoStillAllowed { get; set; }
     }
 }

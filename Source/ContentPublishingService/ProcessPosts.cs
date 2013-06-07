@@ -6,6 +6,7 @@
     using NServiceBus;
     using NServiceBus.Saga;
     using NServiceBusDemo.Commands;
+    using NServiceBusDemo.Events;
     using NServiceBusDemo.Messages;
 
     public class ProcessPosts : Saga<ProcessPostsData>,
@@ -15,6 +16,7 @@
         IHandleMessages<ContentFailedToPostToFacebookPage>
     {
         #region overrides
+
         /// <summary>
         /// For now... I might implement a sagafinder later if there's time
         /// </summary>
@@ -24,6 +26,7 @@
             this.ConfigureMapping<ContentWasPostedToFacebookPage>(sagaData => sagaData.PostScheduleId, m => m.PostScheduleId);
             this.ConfigureMapping<ContentFailedToPostToFacebookPage>(sagaData => sagaData.PostScheduleId, m => m.PostScheduleId);
         }
+
         #endregion
 
         #region handlers
@@ -75,6 +78,13 @@
             Console.WriteLine(string.Format("Commencing post schedule: {0}", this.Data.PostScheduleId));
 
             this.Data.UndoStillAllowed = false;
+
+            //Tell the world we accepted a schedule
+            Bus.Publish<PostScheduleAccepted>(evt =>
+            {
+                evt.PostScheduleId = this.Data.PostScheduleId;
+            });
+
             this.SchedulePosts();
         }
 
@@ -85,6 +95,7 @@
         public void Handle(ContentWasPostedToFacebookPage message)
         {
             this.Data.RemainingPosts.Remove(message.PostId);
+            this.Data.CompletedPosts.Add(message.PostId);
             CheckRemaining();
         }
 
@@ -136,10 +147,13 @@
             {
                 Console.WriteLine("Schedule has completed. Publishing to the world...");
 
+                //Tell the world we finished posting the content
                 Bus.Publish<PostScheduleCompleted>(m =>
                 {
                     m.PostScheduleId = this.Data.PostScheduleId;
+                    m.Successes = this.Data.CompletedPosts;
                 });
+
                 this.MarkAsComplete();  
             }
         }

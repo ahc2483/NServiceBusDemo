@@ -50,10 +50,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AmplifyPostResponse.cs" />
     <Compile Include="ContentFailedToPostToFacebookPage.cs" />
     <Compile Include="ContentPostMessage.cs" />
     <Compile Include="ContentWasPostedToFacebookPage.cs" />
-    <Compile Include="PostScheduleCompleted.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

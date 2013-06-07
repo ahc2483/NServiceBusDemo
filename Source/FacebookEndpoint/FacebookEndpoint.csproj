@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AmplifyPostHandler.cs" />
     <Compile Include="EndpointConfig.cs" />
     <Compile Include="FacebookEndpointAuthHandler.cs" />
     <Compile Include="PostContentToFacebookPageHandler.cs" />

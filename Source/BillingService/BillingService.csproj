@@ -59,8 +59,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigOverride.cs" />
     <Compile Include="EndpointConfig.cs" />
+    <Compile Include="PostScheduleAmplificationCompletedHandler.cs" />
     <Compile Include="PostScheduledCompletedEventHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -69,6 +69,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Events\Events.csproj">
+      <Project>{fab2b6f6-9ee6-4de5-8859-dd6b35dee016}</Project>
+      <Name>Events</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Messages\Messages.csproj">
       <Project>{beff1fb7-25cf-42e5-9d8a-c5873a03ff64}</Project>
       <Name>Messages</Name>
